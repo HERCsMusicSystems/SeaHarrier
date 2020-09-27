@@ -4,7 +4,7 @@
 
 <header><title>Sea Harrier Mission</title></header>
 
-<body bgcolor="#87ceeb" onkeydown="javascript: return keydown (event . key . toLowerCase ());" onkeyup="javascript: return keyup (event . key . toLowerCase ());"/>
+<body bgcolor="black" onkeydown="javascript: return keydown (event . key . toLowerCase ());" onkeyup="javascript: return keyup (event . key . toLowerCase ());"/>
 
 <canvas id="canvas" width="1800" height="800"/>
 
@@ -19,12 +19,12 @@ var harrier = new Image (); harrier . src = 'simulation_94.png'; harrier . onloa
 var invincible = new Image (); invincible . src = 'invincible_right.png'; invincible . onload = function () {repaint (ctx);};
 var water = new Image (); water . src = 'water.png'; water . onload = function () {repaint (ctx);};
 
-var hc = {x: 100, y: 100};
+var hc = {x: 100, y: 400};
 var repaint = function (ctx) {
 	ctx . fillStyle = '#87ceeb';
 	ctx . fillRect (0, 0, canvas . width, canvas . height);
-	ctx . drawImage (invincible, 100, 440);
 	ctx . drawImage (harrier, hc . x, hc . y);
+	ctx . drawImage (invincible, 100, 440);
 	ctx . drawImage (water, 0, 750);
 };
 
@@ -32,9 +32,15 @@ repaint (ctx);
 
 var keydown = function (key) {
 	console . log ('KEYDOWN', key);
-	if (key == 'arrowright') {hc . x += 1; repaint (ctx);}
+	if (key == 'arrowright') hc . x += 2;
+	if (key == 'arrowleft') hc . x -= 2;
+	if (key == 'arrowdown') hc . y += 2;
+	if (key == 'arrowup') hc . y -= 2;
 };
 var keyup = function (e) {console . log ('KEYUP', e);};
+
+
+window . setInterval (function () {repaint (ctx);}, 20);
 
 </script>
 
