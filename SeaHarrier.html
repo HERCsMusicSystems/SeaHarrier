@@ -1,0 +1,42 @@
+<meta charset="UTF-8"/>
+
+<html>
+
+<header><title>Sea Harrier Mission</title></header>
+
+<body bgcolor="#87ceeb" onkeydown="javascript: return keydown (event . key . toLowerCase ());" onkeyup="javascript: return keyup (event . key . toLowerCase ());"/>
+
+<canvas id="canvas" width="1800" height="800"/>
+
+</body>
+
+<script type="text/javascript">
+
+var vanvas = document . getElementById ('canvas');
+var ctx = canvas . getContext ('2d');
+
+var harrier = new Image (); harrier . src = 'simulation_94.png'; harrier . onload = function () {repaint (ctx);};
+var invincible = new Image (); invincible . src = 'invincible_right.png'; invincible . onload = function () {repaint (ctx);};
+var water = new Image (); water . src = 'water.png'; water . onload = function () {repaint (ctx);};
+
+var hc = {x: 100, y: 100};
+var repaint = function (ctx) {
+	ctx . fillStyle = '#87ceeb';
+	ctx . fillRect (0, 0, canvas . width, canvas . height);
+	ctx . drawImage (invincible, 100, 440);
+	ctx . drawImage (harrier, hc . x, hc . y);
+	ctx . drawImage (water, 0, 750);
+};
+
+repaint (ctx);
+
+var keydown = function (key) {
+	console . log ('KEYDOWN', key);
+	if (key == 'arrowright') {hc . x += 1; repaint (ctx);}
+};
+var keyup = function (e) {console . log ('KEYUP', e);};
+
+</script>
+
+</html>
+
