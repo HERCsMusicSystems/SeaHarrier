@@ -17,9 +17,23 @@ var ctrl = {arrowleft: false, arrowright: false, arrowup: false, arrowdown: fals
 var vanvas = document . getElementById ('canvas');
 var ctx = canvas . getContext ('2d');
 
-var harrier = new Image (); harrier . src = 'simulation_94.png'; harrier . onload = function () {repaint (ctx);};
-var invincible = new Image (); invincible . src = 'invincible_right.png'; invincible . onload = function () {repaint (ctx);};
-var water = new Image (); water . src = 'water.png'; water . onload = function () {repaint (ctx);};
+var harrier = new Image (); harrier . src = 'simulation_94.png';
+var invincible = new Image (); invincible . src = 'invincible_right.png';
+var water = new Image (); water . src = 'water.png';
+var cloud_images = [new Image (), new Image (), new Image ()];
+cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png'; cloud_images [2] . src = 'cloud2_big.png';
+
+var rndl = function (list) {
+	var ind = Math . floor (Math . random () * list . length);
+	console . log (ind, list . length);
+	return list [ind];
+};
+
+var clouds = [];
+var number_of_clouds = Math . floor (3 + Math . random () * 4);
+for (var ind = 0; ind < number_of_clouds; ind ++) {
+	clouds . push ({x: Math . floor (Math . random () * 1700), y: Math . floor (Math . random () * 300), image: rndl (cloud_images)});
+}
 
 var hc = {x: 194, y: 632};
 var repaint = function (ctx) {
@@ -32,6 +46,10 @@ var repaint = function (ctx) {
 	ctx . drawImage (harrier, hc . x, hc . y);
 	ctx . drawImage (invincible, 100, 440);
 	ctx . drawImage (water, 0, 750);
+	for (var ind in clouds) {
+		var cloud = clouds [ind];
+		ctx . drawImage (cloud . image, cloud . x, cloud . y);
+	}
 };
 
 repaint (ctx);
