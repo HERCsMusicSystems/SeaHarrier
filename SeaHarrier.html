@@ -4,13 +4,15 @@
 
 <header><title>Sea Harrier Mission</title></header>
 
-<body bgcolor="black" onkeydown="javascript: return keydown (event . key . toLowerCase ());" onkeyup="javascript: return keyup (event . key . toLowerCase ());"/>
+<body bgcolor="black" onkeydown="javascript: event . preventDefault (); return keydown (event . key . toLowerCase ());" onkeyup="javascript: return keyup (event . key . toLowerCase ());"/>
 
 <canvas id="canvas" width="1800" height="800"/>
 
 </body>
 
 <script type="text/javascript">
+
+var ctrl = {arrowleft: false, arrowright: false, arrowup: false, arrowdown: false};
 
 var vanvas = document . getElementById ('canvas');
 var ctx = canvas . getContext ('2d');
@@ -21,6 +23,10 @@ var water = new Image (); water . src = 'water.png'; water . onload = function (
 
 var hc = {x: 100, y: 400};
 var repaint = function (ctx) {
+	if (ctrl . arrowup) hc . y -= 2;
+	if (ctrl . arrowdown) hc . y += 2;
+	if (ctrl . arrowleft) hc . x -= 2;
+	if (ctrl . arrowright) hc . x += 2;
 	ctx . fillStyle = '#87ceeb';
 	ctx . fillRect (0, 0, canvas . width, canvas . height);
 	ctx . drawImage (harrier, hc . x, hc . y);
@@ -30,14 +36,8 @@ var repaint = function (ctx) {
 
 repaint (ctx);
 
-var keydown = function (key) {
-	console . log ('KEYDOWN', key);
-	if (key == 'arrowright') hc . x += 2;
-	if (key == 'arrowleft') hc . x -= 2;
-	if (key == 'arrowdown') hc . y += 2;
-	if (key == 'arrowup') hc . y -= 2;
-};
-var keyup = function (e) {console . log ('KEYUP', e);};
+var keydown = function (key) {ctrl [key] = true;};
+var keyup = function (key) {ctrl [key] = false;};
 
 
 window . setInterval (function () {repaint (ctx);}, 20);
