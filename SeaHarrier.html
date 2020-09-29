@@ -18,6 +18,8 @@ var vanvas = document . getElementById ('canvas');
 var ctx = canvas . getContext ('2d');
 
 var harrier = new Image (); harrier . src = 'simulation_94.png';
+var harrier_on_deck = new Image (); harrier_on_deck . src = 'simulation_on_deck.png';
+var harrier_running = new Image (); harrier_running . src = 'simulation_running.png';
 var invincible = new Image (); invincible . src = 'invincible_right.png';
 var sovremenniy = new Image (); sovremenniy . src = 'sovremenniy_left.png';
 var water = new Image (); water . src = 'water.png';
@@ -43,7 +45,7 @@ clouds . sort (function (a, b) {return a . x - b . x;});
 
 var mission = 0;
 
-var hc = {x: 194, y: 632};
+var hc = {x: 194, y: 633};
 var repaint = function (ctx) {
 	if (ctrl . arrowup) hc . y -= 2;
 	if (ctrl . arrowdown) hc . y += 2;
@@ -51,12 +53,16 @@ var repaint = function (ctx) {
 	if (ctrl . arrowright) hc . x += 2;
 	if (ctrl . p) mission += 2;
 	if (ctrl . o) mission -= 2;
+	var hi = harrier;
+	if (ctrl . q) hi = harrier;
+	if (ctrl . w) hi = harrier_on_deck;
+	if (ctrl . e) hi = harrier_running;
 	if (clouds . length > 0 && clouds [0] . x + clouds [0] . image . width < mission) clouds . shift ();
 	ctx . fillStyle = '#87ceeb';
 	ctx . fillRect (0, 0, canvas . width, canvas . height);
 	ctx . save ();
 	ctx . translate (- mission, 0);
-	ctx . drawImage (harrier, hc . x, hc . y);
+	ctx . drawImage (hi, hc . x, hc . y);
 	ctx . drawImage (invincible, 100, 440);
 	ctx . drawImage (sovremenniy, 1200, 546);
 	var count = 0;
