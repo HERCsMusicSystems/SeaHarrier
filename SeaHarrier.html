@@ -21,9 +21,12 @@ var harrier = new Image (); harrier . src = 'simulation_94.png';
 var invincible = new Image (); invincible . src = 'invincible_right.png';
 var sovremenniy = new Image (); sovremenniy . src = 'sovremenniy_left.png';
 var water = new Image (); water . src = 'water.png';
-var cloud_images = [new Image (), new Image (), new Image (), new Image (), new Image (), new Image ()];
-cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png'; cloud_images [2] . src = 'cloud2_big.png';
-cloud_images [3] . src = 'cloud2_small_mirror.png', cloud_images [4] . src = 'cloud2_medium_mirror.png'; cloud_images [5] . src = 'cloud2_big_mirror.png';
+// var cloud_images = [new Image (), new Image (), new Image (), new Image (), new Image (), new Image ()];
+// cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png'; cloud_images [2] . src = 'cloud2_big.png';
+// cloud_images [3] . src = 'cloud2_small_mirror.png', cloud_images [4] . src = 'cloud2_medium_mirror.png'; cloud_images [5] . src = 'cloud2_big_mirror.png';
+var cloud_images = [new Image (), new Image (), new Image (), new Image ()];
+cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png';
+cloud_images [2] . src = 'cloud2_small_mirror.png', cloud_images [3] . src = 'cloud2_medium_mirror.png';
 
 var rndl = function (list) {
 	var ind = Math . floor (Math . random () * list . length);
@@ -36,6 +39,9 @@ var number_of_clouds = Math . floor (3 + Math . random () * 4);
 for (var ind = 0; ind < number_of_clouds; ind ++) {
 	clouds . push ({x: Math . floor (Math . random () * 1700), y: Math . floor (Math . random () * 200), image: rndl (cloud_images)});
 }
+clouds . sort (function (a, b) {return a . x - b . x;});
+
+var mission = 0;
 
 var hc = {x: 194, y: 632};
 var repaint = function (ctx) {
@@ -43,16 +49,25 @@ var repaint = function (ctx) {
 	if (ctrl . arrowdown) hc . y += 2;
 	if (ctrl . arrowleft) hc . x -= 2;
 	if (ctrl . arrowright) hc . x += 2;
+	if (ctrl . p) mission += 2;
+	if (ctrl . o) mission -= 2;
+	if (clouds . length > 0 && clouds [0] . x + clouds [0] . image . width < mission) clouds . shift ();
 	ctx . fillStyle = '#87ceeb';
 	ctx . fillRect (0, 0, canvas . width, canvas . height);
+	ctx . save ();
+	ctx . translate (- mission, 0);
 	ctx . drawImage (harrier, hc . x, hc . y);
 	ctx . drawImage (invincible, 100, 440);
 	ctx . drawImage (sovremenniy, 1200, 546);
-	ctx . drawImage (water, 0, 750);
+	var count = 0;
 	for (var ind in clouds) {
 		var cloud = clouds [ind];
 		ctx . drawImage (cloud . image, cloud . x, cloud . y);
+		ctx . strokeText (count, cloud . x, cloud . y);
+		count += 1;
 	}
+	ctx . restore ();
+	ctx . drawImage (water, 0, 750);
 };
 
 repaint (ctx);
