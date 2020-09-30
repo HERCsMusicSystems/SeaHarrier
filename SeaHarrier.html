@@ -41,7 +41,7 @@ for (var section = 0; section < 64; section ++) {
 }
 clouds . sort (function (a, b) {return a . x - b . x;});
 
-var ground = [100, 120, 140, 140, 140, 120, 120, 120, 80, 80];
+var ground = [{x: 800, y: 100}, {x: 850, y: 120}, {x: 900, y: 140}, {x: 950, y: 140}, {x: 1000, y: 140}, {x: 1050, y: 120}, {x: 1100, y: 120}, {x: 1150, y: 120}, {x: 1200, y: 80}, {x: 1250, y: 80}];
 
 var ships = [];
 ships . push ({x: 100, y: 440, image: invincible});
@@ -86,12 +86,16 @@ var repaint = function (ctx) {
 	ctx . drawImage (water, 0, 750);
 	ind = 0;
 	ctx . beginPath ();
-	ctx . moveTo (0, canvas . height);
-	while (ind < ground . length) {
-		ctx . lineTo (ind * 32, canvas . height - ground [ind]);
+	// ctx . moveTo (ground [0] . x - mission, canvas . height);
+	while (ind < ground . length && ground [ind] . x < canvas . width + mission) {
+		var g = ground [ind];
+		ctx . strokeText ('*', g . x - mission, canvas . height - g . y);
+		ctx . lineTo (g . x - mission, canvas . height - g . y);
+		// ctx . lineTo (g . x - mission, canvas . height - g . y);
 		ind += 1;
 	}
-	ctx . lineTo (ind * 32, canvas . height);
+	ctx . lineTo (0 - mission, canvas . height);
+	ctx . fillStyle = 'green';
 	ctx . fill ();
 };
 
