@@ -30,18 +30,22 @@ var cloud_images = [new Image (), new Image (), new Image (), new Image ()];
 cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png';
 cloud_images [2] . src = 'cloud2_small_mirror.png', cloud_images [3] . src = 'cloud2_medium_mirror.png';
 
-var rndl = function (list) {
-	var ind = Math . floor (Math . random () * list . length);
-	console . log (ind, list . length);
-	return list [ind];
-};
+var rndl = function (list) {return list [Math . floor (Math . random () * list . length)];};
 
 var clouds = [];
 var number_of_clouds = Math . floor (3 + Math . random () * 4);
-for (var ind = 0; ind < number_of_clouds; ind ++) {
-	clouds . push ({x: Math . floor (Math . random () * 1700), y: Math . floor (Math . random () * 200), image: rndl (cloud_images)});
+for (var section = 0; section < 64; section ++) {
+	for (var ind = 0; ind < number_of_clouds; ind ++) {
+		clouds . push ({x: section * 1800 + Math . floor (Math . random () * 1700), y: Math . floor (Math . random () * 200), image: rndl (cloud_images)});
+	}
 }
 clouds . sort (function (a, b) {return a . x - b . x;});
+
+var ground = [100, 120, 140, 140, 140, 120, 120, 120, 80, 80];
+
+var ships = [];
+ships . push ({x: 100, y: 440, image: invincible});
+ships . push ({x: 3200, y: 546, image: sovremenniy});
 
 var mission = 0;
 
@@ -58,22 +62,37 @@ var repaint = function (ctx) {
 	if (ctrl . w) hi = harrier_on_deck;
 	if (ctrl . e) hi = harrier_running;
 	if (clouds . length > 0 && clouds [0] . x + clouds [0] . image . width < mission) clouds . shift ();
+	if (ships . length > 0 && ships [0] . x + ships [0] . image . width < mission) ships . shift ();
 	ctx . fillStyle = '#87ceeb';
 	ctx . fillRect (0, 0, canvas . width, canvas . height);
-	ctx . save ();
-	ctx . translate (- mission, 0);
+	// ctx . save ();
+	// ctx . translate (- mission, 0);
 	ctx . drawImage (hi, hc . x, hc . y);
-	ctx . drawImage (invincible, 100, 440);
-	ctx . drawImage (sovremenniy, 1200, 546);
-	var count = 0;
-	for (var ind in clouds) {
+	var ind = 0;
+	while (ind < ships . length && ships [ind] . x < canvas . width + mission) {
+		var ship = ships [ind];
+		ctx . drawImage (ship . image, ship . x - mission, ship . y);
+		ctx . strokeText (ind, ship . x - mission, ship . y);
+		ind += 1;
+	}
+	ind = 0;
+	while (ind < clouds . length && clouds [ind] . x < canvas . width + mission) {
 		var cloud = clouds [ind];
-		ctx . drawImage (cloud . image, cloud . x, cloud . y);
-		ctx . strokeText (count, cloud . x, cloud . y);
-		count += 1;
+		ctx . drawImage (cloud . image, cloud . x - mission, cloud . y);
+		ctx . strokeText (ind, cloud . x - mission, cloud . y);
+		ind += 1;
 	}
 	ctx . restore ();
 	ctx . drawImage (water, 0, 750);
+	ind = 0;
+	ctx . beginPath ();
+	ctx . moveTo (0, canvas . height);
+	while (ind < ground . length) {
+		ctx . lineTo (ind * 32, canvas . height - ground [ind]);
+		ind += 1;
+	}
+	ctx . lineTo (ind * 32, canvas . height);
+	ctx . fill ();
 };
 
 repaint (ctx);
