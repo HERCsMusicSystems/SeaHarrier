@@ -23,6 +23,7 @@ var harrier_running = new Image (); harrier_running . src = 'simulation_running.
 var invincible = new Image (); invincible . src = 'invincible_right.png';
 var sovremenniy = new Image (); sovremenniy . src = 'sovremenniy_left.png';
 var water = new Image (); water . src = 'water.png';
+var t90_left = new Image (); t90_left . src = 't90_left.png';
 // var cloud_images = [new Image (), new Image (), new Image (), new Image (), new Image (), new Image ()];
 // cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png'; cloud_images [2] . src = 'cloud2_big.png';
 // cloud_images [3] . src = 'cloud2_small_mirror.png', cloud_images [4] . src = 'cloud2_medium_mirror.png'; cloud_images [5] . src = 'cloud2_big_mirror.png';
@@ -41,7 +42,18 @@ for (var section = 0; section < 64; section ++) {
 }
 clouds . sort (function (a, b) {return a . x - b . x;});
 
-var ground = [{x: 800, y: 100}, {x: 850, y: 120}, {x: 900, y: 140}, {x: 950, y: 140}, {x: 1000, y: 140}, {x: 1050, y: 120}, {x: 1100, y: 120}, {x: 1150, y: 120}, {x: 1200, y: 80}, {x: 1250, y: 80}];
+// var ground = [{x: 800, y: 100}, {x: 850, y: 120}, {x: 900, y: 140}, {x: 950, y: 140}, {x: 1000, y: 140}, {x: 1050, y: 120}, {x: 1100, y: 120}, {x: 1150, y: 120}, {x: 1200, y: 80}, {x: 1250, y: 80}];
+var targets = [];
+var ground = [{x: 800, y: 0}];
+var ind = 800;
+while (ind < 4000) {
+	ind += Math . floor (64 + Math . random () * 128);
+	var height = 50 + Math . floor (Math . random () * 300);
+	ground . push ({x: ind, y: height});
+	targets . push ({x: ind, y: height, image: t90_left});
+	ind += Math . floor (32 + Math . random () * 128);
+	ground . push ({x: ind, y: height});
+}
 
 var ships = [];
 ships . push ({x: 100, y: 440, image: invincible});
@@ -63,6 +75,8 @@ var repaint = function (ctx) {
 	if (ctrl . e) hi = harrier_running;
 	if (clouds . length > 0 && clouds [0] . x + clouds [0] . image . width < mission) clouds . shift ();
 	if (ships . length > 0 && ships [0] . x + ships [0] . image . width < mission) ships . shift ();
+	if (ground . length > 1 && ground [1] . x < mission) ground . shift ();
+	if (targets . length > 0 && targets [0] . x + targets [0] . image . width < mission) targets . shift ();
 	ctx . fillStyle = '#87ceeb';
 	ctx . fillRect (0, 0, canvas . width, canvas . height);
 	// ctx . save ();
@@ -82,21 +96,30 @@ var repaint = function (ctx) {
 		ctx . strokeText (ind, cloud . x - mission, cloud . y);
 		ind += 1;
 	}
-	ctx . restore ();
-	ctx . drawImage (water, 0, 750);
 	ind = 0;
-	ctx . beginPath ();
-	// ctx . moveTo (ground [0] . x - mission, canvas . height);
-	while (ind < ground . length && ground [ind] . x < canvas . width + mission) {
-		var g = ground [ind];
-		ctx . strokeText ('*', g . x - mission, canvas . height - g . y);
-		ctx . lineTo (g . x - mission, canvas . height - g . y);
-		// ctx . lineTo (g . x - mission, canvas . height - g . y);
+	while (ind < targets . length && targets [ind] . x < canvas . width + mission) {
+		var target = targets [ind];
+		ctx . drawImage (target . image, target . x - mission, canvas . height - target . y - target . image . height);
+		ctx . strokeText (ind, target . x - mission, canvas . height - target . y - target . image . height);
 		ind += 1;
 	}
-	ctx . lineTo (0 - mission, canvas . height);
-	ctx . fillStyle = 'green';
-	ctx . fill ();
+	ctx . drawImage (water, 0, canvas . height - 50);
+	if (ground . length > 0) {
+		ctx . beginPath ();
+		ctx . moveTo (ground [0] . x - mission, canvas . height);
+		var ind = 0;
+		var x = 0;
+		while (ind < ground . length && ground [ind] . x < canvas . width + mission) {
+			var g = ground [ind];
+			x = g . x - mission;
+			ctx . lineTo (x, canvas . height - g . y);
+			ind += 1;
+		}
+		if (ind < ground . length) {var g = ground [ind]; x = g . x - mission; ctx . lineTo (x, canvas . height - g . y);}
+		ctx . lineTo (x, canvas . height);
+		ctx . fillStyle = 'green';
+		ctx . fill ();
+	}
 };
 
 repaint (ctx);
@@ -110,4 +133,3 @@ window . setInterval (function () {repaint (ctx);}, 10);
 </script>
 
 </html>
-
