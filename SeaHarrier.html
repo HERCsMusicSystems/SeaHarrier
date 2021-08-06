@@ -4,7 +4,7 @@
 
 <header><title>Sea Harrier Mission</title></header>
 
-<body bgcolor="black" onkeydown="javascript: event . preventDefault (); return keydown (event . key . toLowerCase ());" onkeyup="javascript: return keyup (event . key . toLowerCase ());"/>
+<body bgcolor="black" onkeydown="javascript: return keydown (event . key . toLowerCase ());" onkeyup="javascript: return keyup (event . key . toLowerCase ());"/>
 
 <canvas id="canvas" width="1800" height="800"/>
 
@@ -44,9 +44,9 @@ clouds . sort (function (a, b) {return a . x - b . x;});
 
 // var ground = [{x: 800, y: 100}, {x: 850, y: 120}, {x: 900, y: 140}, {x: 950, y: 140}, {x: 1000, y: 140}, {x: 1050, y: 120}, {x: 1100, y: 120}, {x: 1150, y: 120}, {x: 1200, y: 80}, {x: 1250, y: 80}];
 var targets = [];
-var ground = [{x: 800, y: 0}];
-var ind = 800;
-while (ind < 4000) {
+var ind = 3800;
+var ground = [{x: ind, y: 0}];
+while (ind < 6000) {
 	ind += Math . floor (64 + Math . random () * 128);
 	var height = 50 + Math . floor (Math . random () * 300);
 	ground . push ({x: ind, y: height});
@@ -70,6 +70,12 @@ var repaint = function (ctx) {
 	if (ctrl . p) mission += 2;
 	if (ctrl . o) mission -= 2;
 	var hi = harrier;
+	if (mission < 1300) {
+		hi = harrier_on_deck;
+		hc . x = 194;
+		if (mission < 880) hc . y = 633;
+		else hc . y = 633 - (mission - 880) * 0.1;
+	}
 	if (ctrl . q) hi = harrier;
 	if (ctrl . w) hi = harrier_on_deck;
 	if (ctrl . e) hi = harrier_running;
