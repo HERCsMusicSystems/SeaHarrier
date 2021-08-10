@@ -24,12 +24,16 @@ var invincible = new Image (); invincible . src = 'invincible_right.png';
 var sovremenniy = new Image (); sovremenniy . src = 'sovremenniy_left.png';
 var water = new Image (); water . src = 'water.png';
 var t90_left = new Image (); t90_left . src = 't90_left.png';
+var missile = new Image (); missile . src = 'missile.png';
+var bomb = new Image (); bomb . src = 'bomb.png';
 // var cloud_images = [new Image (), new Image (), new Image (), new Image (), new Image (), new Image ()];
 // cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png'; cloud_images [2] . src = 'cloud2_big.png';
 // cloud_images [3] . src = 'cloud2_small_mirror.png', cloud_images [4] . src = 'cloud2_medium_mirror.png'; cloud_images [5] . src = 'cloud2_big_mirror.png';
 var cloud_images = [new Image (), new Image (), new Image (), new Image ()];
 cloud_images [0] . src = 'cloud2_small.png'; cloud_images [1] . src = 'cloud2_medium.png';
 cloud_images [2] . src = 'cloud2_small_mirror.png', cloud_images [3] . src = 'cloud2_medium_mirror.png';
+
+invincible . onload = water . onload = function () {repaint (ctx);};
 
 var rndl = function (list) {return list [Math . floor (Math . random () * list . length)];};
 
@@ -59,22 +63,32 @@ var ships = [];
 ships . push ({x: 100, y: 440, image: invincible});
 ships . push ({x: 3200, y: 546, image: sovremenniy});
 
+var missiles = [];
+var bombs = [];
+
 var mission = 0;
 
 var hc = {x: 194, y: 633};
+var ramping = 0.1;
+var fired = false;
 var repaint = function (ctx) {
-	if (ctrl . arrowup) hc . y -= 2;
-	if (ctrl . arrowdown) hc . y += 2;
-	if (ctrl . arrowleft) hc . x -= 2;
-	if (ctrl . arrowright) hc . x += 2;
+	if (ctrl . arrowup) hc . y -= 3;
+	if (ctrl . arrowdown) hc . y += 3;
+	if (ctrl . arrowleft) hc . x -= 4;
+	if (ctrl . arrowright) hc . x += 4;
 	if (ctrl . p) mission += 2;
 	if (ctrl . o) mission -= 2;
+	//mission += 4;
 	var hi = harrier;
-	if (mission < 1300) {
-		hi = harrier_on_deck;
+	if (mission < 1500) {
+		hi = mission < 100 ? harrier_on_deck : harrier_running;
 		hc . x = 194;
 		if (mission < 880) hc . y = 633;
-		else hc . y = 633 - (mission - 880) * 0.1;
+		else {hc . y = 633 - (mission - 880) * ramping; ramping *= 1.002; hi = mission < 1300 ? harrier_on_deck : harrier;}
+	}
+	if (mission > 1500) {
+		if (ctrl ['enter'] && ! fired) {missiles . push ({x: hc . x + 38 + mission, y: hc . y + 24, run: 500}); fired = true;}
+		if (ctrl [' '] && ! fired) {bombs . push ({x: hc . x + 38 + mission, y: hc . y + 24, run: 500}); fired = true;}
 	}
 	if (ctrl . q) hi = harrier;
 	if (ctrl . w) hi = harrier_on_deck;
@@ -103,6 +117,22 @@ var repaint = function (ctx) {
 		ind += 1;
 	}
 	ind = 0;
+	while (ind < missiles . length) {
+		m = missiles [ind];
+		ctx . drawImage (missile, m . x - mission, m . y);
+		m . x += 8;
+		m . run -= 1;
+		if (m . run < 1) missiles . splice (ind, 1); else ind += 1;
+	}
+	ind = 0;
+	while (ind < bombs . length) {
+		b = bombs [ind];
+		ctx . drawImage (bomb, b . x - mission, b . y);
+		b . y += 2;
+		b . run -= 1;
+		if (b . run < 1) bombs . splice (ind, 1); else ind += 1;
+	}
+	ind = 0;
 	while (ind < targets . length && targets [ind] . x < canvas . width + mission) {
 		var target = targets [ind];
 		ctx . drawImage (target . image, target . x - mission, canvas . height - target . y - target . image . height);
@@ -128,13 +158,10 @@ var repaint = function (ctx) {
 	}
 };
 
-repaint (ctx);
-
 var keydown = function (key) {ctrl [key] = true;};
-var keyup = function (key) {ctrl [key] = false;};
+var keyup = function (key) {ctrl [key] = false; fired = false;};
 
-
-window . setInterval (function () {repaint (ctx);}, 10);
+window . setTimeout (function () {window . setInterval (function () {mission += 4; repaint (ctx);}, 12);}, 2000);
 
 </script>
 
